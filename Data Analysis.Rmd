@@ -10,22 +10,119 @@ date: "2023-04-26"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
-summary(cars)
+library(readxl)
+gendergap <- read_excel("data/gendergap.xlsx" , skip = 3)
+View(gendergap)
+
+gendergap %>%
+pivot_longer( cols = 5:15,
+             names_to = "job_type",
+             values_to = "average_hourly_earnings") %>%
+  filter(Sex != "Total")
+  
+
+gendergap %>%
+pivot_longer( cols = 16:19,
+             names_to = "unemployment",
+             values_to = "unemployment_rate") %>%
+  filter(Sex != "Total")
+
+sadece male verileri
+
+gendergap %>%
+group_by(Sex) %>%
+  filter(Sex != "Total") %>%
+filter(Sex!= "Female")
+
+sadece female verileri
+
+gendergap %>%
+group_by(Sex) %>%
+  filter(Sex != "Total") %>%
+filter(Sex!= "Male")
+  
+  ülkelere göre avg male earnings
+
+  gendergap %>%
+  group_by(Country) %>%
+  filter(Sex !="Total") %>%
+  filter(Sex != "Female") %>%
+  summarise(Male_Avg_Earngs = mean(Total, na.rm = TRUE))%>%
+  select(Country, Male_Avg_Earngs)
+
+ülkelere göre avg female earnings
+
+gendergap %>%
+  group_by(Country) %>%
+  filter(Sex !="Total") %>%
+  filter(Sex != "Male") %>%
+  summarise(Female_Avg_Earngs = mean(Total, na.rm = TRUE)) %>%
+  select(Country, Female_Avg_Earngs)
+  
+Tüm ülkelerdeki yıl bazında male avg earnings
+
+gendergap %>%
+  group_by(Time) %>%
+  filter(Sex !="Total") %>%
+  filter(Sex != "Female") %>%
+  arrange(Time) %>%
+  mutate(Male_Avg_Earngs = mean(Total, na.rm = TRUE)) %>%
+  select(Male_Avg_Earngs)
+  
+Tüm ülkelerdeki yıl bazında Female avg earnings
+
+gendergap %>%
+  group_by(Time) %>%
+  filter(Sex !="Total") %>%
+  filter(Sex != "Male") %>%
+  arrange(Time) %>%
+  mutate(Female_Avg_Earngs = mean(Total, na.rm = TRUE)) %>%
+  select(Female_Avg_Earngs )
+  
+
+ülkelere göre female managers avg earnings
+
+gendergap %>%
+  group_by(Country) %>% 
+   filter(Sex != "Total") %>%
+  filter(Sex != "Male") %>%
+  summarise(Female_Managers_Avg_Earngs = mean(Managers, na.rm = TRUE)) 
+
+ülkelere göre male managers avg earnings
+
+gendergap %>%
+  group_by(Country) %>% 
+   filter(Sex != "Total") %>%
+  filter(Sex != "Female") %>%
+  summarise(Male_Managers_Avg_Earngs = mean(Managers, na.rm = TRUE))
+  
+
+  
+
+
+gendergap %>%
+  count(Country)
+  
+  
+  
+
+print(gendergap)
 ```
+```{r} 
+library(tidyverse)
 
-## Including Plots
+data1 <- readxl::read_excel("data/gendergap.xlsx")
+glimpse(data1)
+names(data1)
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+  
+
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
