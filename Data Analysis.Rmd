@@ -6,71 +6,90 @@ output:
 date: "2023-04-26"
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
-
-
-
-```{r cars}
+```{r}
+library(dplyr)
 library(readxl)
 gendergap <- read_excel("data/gendergap.xlsx" , skip = 3)
 View(gendergap)
-
-  
+```
 
 sadece male verileri
 
+```{r}
 gendergap %>%
 group_by(Sex) %>%
   filter(Sex != "Total") %>%
-filter(Sex!= "Female")
+filter(Sex != "Female")
+```
 
 sadece female verileri
-
+```{r}
+options(repos = list(CRAN="http://cran.rstudio.com/"))
 gendergap %>%
 group_by(Sex) %>%
   filter(Sex != "Total") %>%
 filter(Sex!= "Male")
 
-install.packages("ggplot2")
-install.packages("GGally")
+
+
+only_male_female <- gendergap %>%
+  filter(Sex != Total)
 
 only_male_female %>%
   GGally::ggally_box(mapping = ggplot2::aes(x = Total, y = Sex)) +
-    labs(x = "", y = "") +
-    theme_minimal()
+  ggplot2::labs(x = "", y = "") +
+    ggplot2::theme_minimal() 
 
 
-t.test(only_male_female$Total ~ only_male_female$Sex)
 
+gendergap %>%
+filter(Sex %in% c("Male", "Female")) %>%
+t.test(Total ~ Sex, data = ., alternative = "two.sided")
   
-  ülkelere göre avg male earnings
 
-  gendergap %>%
+
+
+```
+
+ülkelere göre avg male earnings
+```{r}
+gendergap %>%
   group_by(Country) %>%
   filter(Sex !="Total") %>%
   filter(Sex != "Female") %>%
   summarise(Male_Avg_Earngs = mean(Total, na.rm = TRUE))%>%
   select(Country, Male_Avg_Earngs)
-  
+```
 
 ülkelere göre avg female earnings
-
+```{r}
 gendergap %>%
   group_by(Country) %>%
   filter(Sex !="Total") %>%
   filter(Sex != "Male") %>%
   summarise(Female_Avg_Earngs = mean(Total, na.rm = TRUE)) %>%
-  select(Country, Female_Avg_Earngs)
+  select(Country, Female_Avg_Earngs) 
   
-Average_Earnings_According_to_Sex_And_Country <- aov(Total ~ Country + Sex, data = only_male_female)
-tidy(Average_Earnings_According_to_Sex_And_Country)
+  install.packages("ggplot2")
 
+Average_Earnings_According_to_Sex_And_Country <- aov(Total ~ Country + Sex, data = only_male_female)
+broom::tidy(Average_Earnings_According_to_Sex_And_Country)  
+
+
+
+
+
+gendergap %>%
+  filter(Country == "Afghanistan") %>%
+filter(Sex %in% c("Male", "Female")) %>%
+  t.test(Total ~ Sex, data =., alternative = "two.sided")
+
+
+```
 
 Tüm ülkelerdeki yıl bazında male avg earnings
-
+```{r}
 gendergap %>%
   group_by(Time) %>%
   filter(Sex !="Total") %>%
@@ -78,9 +97,10 @@ gendergap %>%
   arrange(Time) %>%
   mutate(Male_Avg_Earngs = mean(Total, na.rm = TRUE)) %>%
   select(Male_Avg_Earngs)
-  
-Tüm ülkelerdeki yıl bazında Female avg earnings
+```
 
+Tüm ülkelerdeki yıl bazında Female avg earnings
+```{r}
 gendergap %>%
   group_by(Time) %>%
   filter(Sex !="Total") %>%
@@ -88,216 +108,245 @@ gendergap %>%
   arrange(Time) %>%
   mutate(Female_Avg_Earngs = mean(Total, na.rm = TRUE)) %>%
   select(Female_Avg_Earngs )
-  
+
+devtools::install_github("hrbrmstr/hrbrthemes")
+
+
+```
 
 ülkelere göre female managers avg earnings
-
+```{r}
 gendergap %>%
   group_by(Country) %>% 
    filter(Sex != "Total") %>%
   filter(Sex != "Male") %>%
-  summarise(Female_Managers_Avg_Earngs = mean(Managers, na.rm = TRUE)) 
+  summarise(Female_Managers_Avg_Earngs = mean(Managers, na.rm = TRUE))
+```
 
 ülkelere göre male managers avg earnings
-
+```{r}
 gendergap %>%
   group_by(Country) %>% 
    filter(Sex != "Total") %>%
   filter(Sex != "Female") %>%
   summarise(Male_Managers_Avg_Earngs = mean(Managers, na.rm = TRUE))
-  
+```
+
 ülkelere göre male professionals avg earnings
 
-  gendergap %>%
+```{r}
+gendergap %>%
   group_by(Country) %>% 
    filter(Sex != "Total") %>%
   filter(Sex != "Female") %>%
   summarise(Male_Professionals_Avg_Earngs = mean(Professionals, na.rm = TRUE))
-  
-  ülkelere göre female professionals avg earnings
-  
-  gendergap %>%
+```
+
+ ülkelere göre female professionals avg earnings
+```{r}
+gendergap %>%
   group_by(Country) %>% 
    filter(Sex != "Total") %>%
   filter(Sex != "Male") %>%
-  summarise(Female_Professionals_Avg_Earngs = mean(Professionals, na.rm = TRUE)) 
-  
-ülkelere göre Male technicians and associate professionals Avg Earngs
+  summarise(Female_Professionals_Avg_Earngs = mean(Professionals, na.rm = TRUE))
+```
 
+ülkelere göre Male technicians and associate professionals Avg Earngs
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
   filter(sex != "Total") %>%
   filter(sex != "Female") %>%
   summarise(Male_technicians_and_associate_professionals_Avg_Earngs = mean(technicians_and_associate_professionals, na.rm = TRUE))
+```
 
 ülkelere göre female technicians and associate professionals Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
   filter(sex != "Total") %>%
   filter(sex != "Male") %>%
   summarise(Female_technicians_and_associate_professionals_Avg_Earngs = mean(technicians_and_associate_professionals, na.rm = TRUE))
+```
 
 ülkelere göre male Clerical support workers Avg Earngs
 
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Female") %>%
   summarise(Male_Clerical_support_workers_Avg_Earngs = mean(clerical_support_workers, na.rm = TRUE))
-
+```
 
 ülkelere göre Female Clerical support workers Avg Earngs
 
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Male") %>%
   summarise(Female_Clerical_support_workers_Avg_Earngs = mean(clerical_support_workers, na.rm = TRUE))
+```
 
 male service and sales workers avg earnings
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Female") %>%
   summarise(Male_service_and_sales_workers_Avg_Earngs = mean(service_and_sales_workers, na.rm = TRUE))
-  
-male service and sales workers avg earnings
+```
 
+female service and sales workers avg earnings
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Male") %>%
   summarise(Female_service_and_sales_workers_Avg_Earngs = mean(service_and_sales_workers, na.rm = TRUE))
+```
 
 Female skilled agricultural forestry and fishery workers Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Male") %>%
   summarise(Female_skilled_agricultural_forestry_and_fishery_workers_Avg_Earngs = mean(skilled_agricultural_forestry_and_fishery_workers, na.rm = TRUE))
+```
 
 Male skilled agricultural forestry and fishery workers Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Female") %>%
   summarise(Male_skilled_agricultural_forestry_and_fishery_workers_Avg_Earngs = mean(skilled_agricultural_forestry_and_fishery_workers, na.rm = TRUE))
+```
 
 Male craft and related trades workers Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Female") %>%
   summarise(Male_craft_and_related_trades_workers_Avg_Earngs = mean(craft_and_related_trades_workers, na.rm = TRUE))
+```
 
 Female craft and related trades workers Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Male") %>%
   summarise(Female_craft_and_related_trades_workers_Avg_Earngs = mean(craft_and_related_trades_workers, na.rm = TRUE))
+```
 
 Male plant and machine operators and assemblers Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Female") %>%
   summarise(Male_plant_and_machine_operators_and_assemblers_Avg_Earngs = mean(plant_and_machine_operators_and_assemblers, na.rm = TRUE))
+```
 
 Female plant and machine operators and assemblers Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Male") %>%
   summarise(Female_plant_and_machine_operators_and_assemblers_Avg_Earngs = mean(plant_and_machine_operators_and_assemblers, na.rm = TRUE))
+```
 
 Male elementary occupations Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Female") %>%
   summarise(Male_elementary_occupations_Avg_Earngs = mean(elementary_occupations, na.rm = TRUE))
+```
 
 Female elementary occupations Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Male") %>%
   summarise(Female_elementary_occupations_Avg_Earngs = mean(elementary_occupations, na.rm = TRUE))
+```
 
 Male armed forces occupations Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Female") %>%
   summarise(Male_armed_forces_occupations_Avg_Earngs = mean(armed_forces_occupations, na.rm = TRUE))
+```
 
 Female armed forces occupations Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Male") %>%
   summarise(Female_armed_forces_occupations_Avg_Earngs = mean(armed_forces_occupations, na.rm = TRUE))
+```
 
 Male not elsewhere classified Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Female") %>%
   summarise(Male_not_elsewhere_classified_Avg_Earngs = mean(not_elsewhere_classified, na.rm = TRUE))
+```
 
 Female not elsewhere classified Avg Earngs
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>% 
    filter(sex != "Total") %>%
   filter(sex != "Male") %>%
   summarise(Female_not_elsewhere_classified_Avg_Earngs = mean(not_elsewhere_classified, na.rm = TRUE))
-  
-Kadın-Erkek mesleklere ve yıla göre avg earnings
+```
 
+Kadın-Erkek mesleklere ve yıla göre avg earnings
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
-pivot_longer( cols = 5:15,
+tidyr::pivot_longer( cols = 5:15,
              names_to = "job_type",
              values_to = "average_hourly_earnings") %>%
 filter(sex!= "Total") %>%
-select(-c("total", "x15", "x15_64", "x15_24", "x25")) 
-
+select(-c("total", "x15", "x15_64", "x15_24", "x25"))
+```
 
 male 15 years underemployment
 
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>%
@@ -305,9 +354,10 @@ gendergap %>%
   filter(sex != "Female") %>%
   summarise(Male_15years_underemployment = mean(x15, na.rm = TRUE))%>%
   select(country, Male_15years_underemployment)
+```
 
 female 15 years underemployment
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>%
@@ -315,9 +365,10 @@ gendergap %>%
   filter(sex != "Male") %>%
   summarise(Female_15years_underemployment = mean(x15, na.rm = TRUE))%>%
   select(country, Female_15years_underemployment)
+```
 
 male 15-64 years underemployment
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>%
@@ -325,9 +376,10 @@ gendergap %>%
   filter(sex != "Female") %>%
   summarise(Male_15.64years_underemployment = mean(x15_64, na.rm = TRUE))%>%
   select(country, Male_15.64years_underemployment)
+```
 
 female 15-64 years underemployment
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>%
@@ -335,9 +387,10 @@ gendergap %>%
   filter(sex != "Male") %>%
   summarise(Female_15.64years_underemployment = mean(x15_64, na.rm = TRUE))%>%
   select(country, Female_15.64years_underemployment)
+```
 
 male 15-24 years underemployment
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>%
@@ -345,9 +398,10 @@ gendergap %>%
   filter(sex != "Female") %>%
   summarise(Male_15.24years_underemployment = mean(x15_24, na.rm = TRUE))%>%
   select(country, Male_15.24years_underemployment)
+```
 
 female 15-24 years underemployment
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>%
@@ -355,9 +409,10 @@ gendergap %>%
   filter(sex != "Male") %>%
   summarise(Female_15.24years_underemployment = mean(x15_24, na.rm = TRUE))%>%
   select(country, Female_15.24years_underemployment)
+```
 
 female 25 years underemployment
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>%
@@ -365,9 +420,10 @@ gendergap %>%
   filter(sex != "Male") %>%
   summarise(Female_25years_underemployment = mean(x25, na.rm = TRUE))%>%
   select(country, Female_25years_underemployment)
+```
 
 male 25 years underemployment
-
+```{r}
 gendergap %>%
   janitor::clean_names() %>%
   group_by(country) %>%
@@ -375,43 +431,19 @@ gendergap %>%
   filter(sex != "Female") %>%
   summarise(Male_25years_underemployment = mean(x25, na.rm = TRUE))%>%
   select(country, Male_25years_underemployment)
+```
 
+```{r}
 only_male_female <- gendergap %>%
   filter(Sex!= "Total")
   shapiro.test(only_male_female$Total)
 
   only_male_female %>%
     group_by(Sex) %>%
-    nest() %>%
-    mutate(Shapiro = map(data, ~shapiro.test(.x$Total))) %>%
-    mutate(glance_shapiro = Shapiro %>% map(glance)) %>%
-    unnest(glance_shapiro) %>%
+    tidyr::nest() %>%
+    mutate(Shapiro = purrr::map(data, ~shapiro.test(.x$Total))) %>%
+    mutate(glance_shapiro = Shapiro %>% purrr::map(broom::glance)) %>%
+    tidyr::unnest(glance_shapiro) %>%
     select(Sex, statistic, p.value)
-  
-  
-  
- install.packages("ggplot2")
-install.packages("GGally")
-
-only_male_female %>%
-  GGally::ggally_box(mapping = ggplot2::aes(x = Total, y = Sex)) +
-    labs(x = "", y = "") +
-    theme_minimal()
-
-
-t.test(only_male_female$Total ~ only_male_female$Sex)
-```
-```{r}
-library(tidyverse)
-
-data1 <- readxl::read_excel("data/gendergap.xlsx")
-glimpse(data1)
-names(data1)
-
-
-
-  
-
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
