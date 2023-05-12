@@ -14,7 +14,7 @@ gendergap <- read_excel("data/gendergap.xlsx" , skip = 3)
 View(gendergap)
 ```
 
-sadece male verileri
+male data
 
 ```{r}
 gendergap %>%
@@ -23,14 +23,13 @@ group_by(Sex) %>%
 filter(Sex != "Female")
 ```
 
-sadece female verileri
+female data
 ```{r}
-options(repos = list(CRAN="http://cran.rstudio.com/"))
+
 gendergap %>%
 group_by(Sex) %>%
   filter(Sex != "Total") %>%
 filter(Sex!= "Male")
-
 
 
 only_male_female <- gendergap %>%
@@ -48,47 +47,73 @@ filter(Sex %in% c("Male", "Female")) %>%
 t.test(Total ~ Sex, data = ., alternative = "two.sided")
   
 
-
-
 ```
 
-ülkelere göre avg male earnings
+avg male earnings according to country
 ```{r}
+
 gendergap %>%
-  group_by(Country) %>%
+  group_by(Country)%>%
   filter(Sex !="Total") %>%
   filter(Sex != "Female") %>%
   summarise(Male_Avg_Earngs = mean(Total, na.rm = TRUE))%>%
-  select(Country, Male_Avg_Earngs)
+  select(Male_Avg_Earngs)
 ```
 
-ülkelere göre avg female earnings
+avg female earnings according to country
 ```{r}
 gendergap %>%
-  group_by(Country) %>%
+  
   filter(Sex !="Total") %>%
   filter(Sex != "Male") %>%
-  summarise(Female_Avg_Earngs = mean(Total, na.rm = TRUE)) %>%
-  select(Country, Female_Avg_Earngs) 
+  summarise(Female_Avg_Earngs = mean(Total, na.rm = TRUE))
   
-  install.packages("ggplot2")
+  
+  
+```
 
+
+```{r}
 Average_Earnings_According_to_Sex_And_Country <- aov(Total ~ Country + Sex, data = only_male_female)
-broom::tidy(Average_Earnings_According_to_Sex_And_Country)  
+broom::tidy(Average_Earnings_According_to_Sex_And_Country)
+```
 
 
-
-
-
+```{r}
 gendergap %>%
   filter(Country == "Afghanistan") %>%
 filter(Sex %in% c("Male", "Female")) %>%
   t.test(Total ~ Sex, data =., alternative = "two.sided")
-
+library(broom)
+```
+```{r}
+gendergap %>%
 
 ```
 
-Tüm ülkelerdeki yıl bazında male avg earnings
+
+```{r}
+gendergap %>%
+  filter(Sex != "Total") %>%
+group_by(Sex) %>%
+  nest() %>%
+mutate(t_test = map(data, ~t.test(.x$Total))) %>%
+  mutate(glance_t_test = t_test %>% purrr::map(glance)) %>%
+  unnest(glance_t_test) %>%
+  select(Sex,statistic, p.value)
+```
+```{r}
+
+only_male_female %>%
+  group_by(Sex) %>%
+  nest() %>%
+mutate(t_test = map(data, ~t.test(.x$Total))) %>%
+  mutate(glance_t_test = t_test %>% purrr::map(glance)) %>%
+  unnest(glance_t_test) %>%
+  select(Country, statistic, p.value)
+```
+
+male avg earnings in countries based on year
 ```{r}
 gendergap %>%
   group_by(Time) %>%
@@ -99,7 +124,7 @@ gendergap %>%
   select(Male_Avg_Earngs)
 ```
 
-Tüm ülkelerdeki yıl bazında Female avg earnings
+Female avg earnings in countries based on year
 ```{r}
 gendergap %>%
   group_by(Time) %>%
@@ -109,12 +134,10 @@ gendergap %>%
   mutate(Female_Avg_Earngs = mean(Total, na.rm = TRUE)) %>%
   select(Female_Avg_Earngs )
 
-devtools::install_github("hrbrmstr/hrbrthemes")
-
 
 ```
 
-ülkelere göre female managers avg earnings
+female managers avg earnings according to country
 ```{r}
 gendergap %>%
   group_by(Country) %>% 
@@ -123,7 +146,7 @@ gendergap %>%
   summarise(Female_Managers_Avg_Earngs = mean(Managers, na.rm = TRUE))
 ```
 
-ülkelere göre male managers avg earnings
+male managers avg earnings according to country
 ```{r}
 gendergap %>%
   group_by(Country) %>% 
@@ -132,7 +155,7 @@ gendergap %>%
   summarise(Male_Managers_Avg_Earngs = mean(Managers, na.rm = TRUE))
 ```
 
-ülkelere göre male professionals avg earnings
+male professionals avg earnings according to country
 
 ```{r}
 gendergap %>%
@@ -142,7 +165,7 @@ gendergap %>%
   summarise(Male_Professionals_Avg_Earngs = mean(Professionals, na.rm = TRUE))
 ```
 
- ülkelere göre female professionals avg earnings
+female professionals avg earnings according to country
 ```{r}
 gendergap %>%
   group_by(Country) %>% 
@@ -151,7 +174,7 @@ gendergap %>%
   summarise(Female_Professionals_Avg_Earngs = mean(Professionals, na.rm = TRUE))
 ```
 
-ülkelere göre Male technicians and associate professionals Avg Earngs
+Male technicians and associate professionals Avg Earngs according to country
 ```{r}
 gendergap %>%
   janitor::clean_names() %>%
@@ -161,7 +184,7 @@ gendergap %>%
   summarise(Male_technicians_and_associate_professionals_Avg_Earngs = mean(technicians_and_associate_professionals, na.rm = TRUE))
 ```
 
-ülkelere göre female technicians and associate professionals Avg Earngs
+female technicians and associate professionals Avg Earngs according to country
 ```{r}
 gendergap %>%
   janitor::clean_names() %>%
@@ -171,7 +194,7 @@ gendergap %>%
   summarise(Female_technicians_and_associate_professionals_Avg_Earngs = mean(technicians_and_associate_professionals, na.rm = TRUE))
 ```
 
-ülkelere göre male Clerical support workers Avg Earngs
+ male Clerical support workers Avg Earngs according to country
 
 ```{r}
 gendergap %>%
@@ -182,7 +205,7 @@ gendergap %>%
   summarise(Male_Clerical_support_workers_Avg_Earngs = mean(clerical_support_workers, na.rm = TRUE))
 ```
 
-ülkelere göre Female Clerical support workers Avg Earngs
+ Female Clerical support workers Avg Earngs according to country
 
 ```{r}
 gendergap %>%
@@ -333,7 +356,7 @@ gendergap %>%
   summarise(Female_not_elsewhere_classified_Avg_Earngs = mean(not_elsewhere_classified, na.rm = TRUE))
 ```
 
-Kadın-Erkek mesleklere ve yıla göre avg earnings
+Female-Male avg earnings according to occupation and year
 ```{r}
 gendergap %>%
   janitor::clean_names() %>%
