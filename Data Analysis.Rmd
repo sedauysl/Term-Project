@@ -1,472 +1,158 @@
 ---
-title: "Untitled"
+title: "Title"
+author: 
+  - Last Name, First Name[^1]
+bibliography: ./bibliography/biblio.bib
+csl: ./csl/apa.csl
+header-includes:
+  - \usepackage{polyglossia}
+  - \setmainlanguage{english}
+  - \usepackage{booktabs}
+  - \usepackage{caption} 
+  - \captionsetup[table]{skip=10pt}
 output:
-  pdf_document: default
-  html_document: default
-date: "2023-04-26"
+  bookdown::pdf_document2:
+    fig_caption: yes
+    fig_height: 3
+    fig_width: 4
+    keep_tex: no
+    latex_engine: xelatex
+    number_sections: yes
+    toc: no
+geometry: margin=1in
+link-citations: yes
+urlcolor: blue
+fontsize: 12pt
+biblio-style: apalike
+abstract: |
+  Write your abstract here.
 ---
-
-
-```{r}
-library(dplyr)
-library(readxl)
-gendergap <- read_excel("data/gendergap.xlsx" , skip = 3)
-View(gendergap)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
-male data
+<!-- ======================================================================= -->
+<!-- ============================== FOOTNOTES ============================== -->
+<!-- ======================================================================= -->
+[^1]: Student ID
 
-```{r}
-gendergap %>%
-group_by(Sex) %>%
-  filter(Sex != "Total") %>%
-filter(Sex != "Female")
-```
+# Introduction
+Whether or not women have equal rights in the workforce has been a matter of debate since the past. Even if they have equal skills, women's working at lower wages than men is one of the biggest socio-economic problems of countries. Unequal policies of countries or sectors negatively affect women's labor supply, female unemployment rates and women's economic power. At this point, unequal opportunities break the trust and desire of women employees and drop them from the workforce. These unequal labor policies and the unfair behavior of the sectors in almost every country in the world negatively affect productivity regardless of whether they are female-dominated or male-dominated sectors. In this study, it will be determined whether an egalitarian path is followed by looking at workers' wages according to gender and occupations and unemployment rates according to gender,ages in countries with different socioeconomic and sociocultural characteristics. In this study, hourly wages according to gender and different occupations and unemployment rates according to gender and ages in different countries in different years were used from the International Labor Organization resource and supported the data with literature review. This study based on the hypothesis “Women earn less than men in all occupations.", and the data were analyzed with T-test and Chi-Square. According to the analysis, the wages and employment status of individuals and ages in different countries and different genders and in different occupations were examined according to the results obtained.
 
-female data
-```{r}
+## Literature Review
 
-gendergap %>%
-group_by(Sex) %>%
-  filter(Sex != "Total") %>%
-filter(Sex!= "Male")
+Why women achieve less wages compared to men of similar qualifications raises questions in the minds of economists for a period and has been studied from a variety of perspectives.It is a well-studied touches to revise the issues from the perspective of occupations and especially the effect of occupational discrimination according to gender. Although unknowns maintain about how discrimination affects women's wages with this question:"Were women's occupations really less capable than men's, or was the pay completely schismatic?", for a long period, occupational segregation was seen as major factor of low women's payments.[@bizopoulou2016task],this shows that the fact that male and female workers receive different pay  is an nearly global property of the work force market,without having to look at where female workers work. It has been determined that occupations dominated by women pay less than occupations dominated by men, despite having the same cability grade.[@hegewisch2010separate] Women's median earnings are less compared to men's in almost all occupations, regardless of whether they work in occupations mainly dominated by women or men, or both.[@hegewisch2021cinsiyet] Considering the being of gender pay and differences related with occupation,there is a natural tendency to assume that there is a connection between these two data sets. Essentially, the oldest theories of gender differences assumed such a connection among earnings and professional structure. The depth of the theory that came to be known as the occupational distinction hypothesis goes back at least to Edgeworth (1922) and Rathbone (1917). The argument applied to gender differences is that definite occupations are mainly reserved for women, however men are independent in the occupation of their selection. In conclusion,as women were forced into simple occupations,the increase in the supply of female workers in women's jobs and decrease female workers' wages. Wage increases occurred as the supply of male occupations decreased.[@polachek1987mesleki] Obvious gender biases persist through a wide range of industries and occupations, which are more evident at the sub-industry level. Females, who have a particularly great part in the health, welfare, education, training and retail workforce, on the contrary, have a very weak part in mining, electricity, gas, water and construction.
 
+Moreover,females compose to the wide majority of clerical, administrative, community and personal service as employees. The care sector and social services, particularly childcare and aged care, are extremely feminized sectors and professions. As well as women earn a lower hourly wage than men in most occupations, the differences are nearly as large in feminized profession such as community and personal service employees and as in male controlled professions, such as technicians and trade employees. Likewise, the wages in health care and social assistance, a feminized sector, have slightly greater difference wage than in mining and construction, which are male-dominated sectors. Also, leastways at a large standard,there is no robust design of expressively poorer wages for full-time employees in feminized professions and industries. United with proof that the gender pay gap can be widely expressed by individual features at lower pay levels, it shows that females have great probability than males to be classified under the occupational hierarchy, without taking care of ability.[@broderick2012politikası]
 
-only_male_female <- gendergap %>%
-  filter(Sex != Total)
+It is important to explain why women are relegated to a lower economic position. When these patterns arise from unequal opportunities, due to unjust hiring exercises, it means that the economy is failing to fully and appropriately  employ highly productive workers. Conversely, if  unfair economic outcomes result from varying individual choices despite fair opportunities,followed by government intervention can cause a damaged allotment of resources and unproductivies in the economy. If productive efficiency is hindered instead of helping disadvantaged groups, then in the long run everyone suffers.[@polachek1987mesleki]
 
-only_male_female %>%
-  GGally::ggally_box(mapping = ggplot2::aes(x = Total, y = Sex)) +
-  ggplot2::labs(x = "", y = "") +
-    ggplot2::theme_minimal() 
+# Data
+In this section, discuss the source of the data set you use in your study, if you have done any operation on the raw data, these operations and the summary statistics about the data set. In this section, it is mandatory to have a table (Table \ref{tab:summary}) containing summary statistics (mean, standard deviation, minimum, maximum, etc. values) of all variables. Make the necessary references to your tables as shown in the previous sentence [@perkins:1991].
+
+R codes for the analysis should start in this section. In this section, you should include the codes that imports the data set into R and the codes that generate summary statistics.
 
 
-
-gendergap %>%
-filter(Sex %in% c("Male", "Female")) %>%
-t.test(Total ~ Sex, data = ., alternative = "two.sided")
-  
-
-```
-
-avg male earnings according to country
-```{r}
-
-gendergap %>%
-  group_by(Country)%>%
-  filter(Sex !="Total") %>%
-  filter(Sex != "Female") %>%
-  summarise(Male_Avg_Earngs = mean(Total, na.rm = TRUE))%>%
-  select(Male_Avg_Earngs)
-```
-
-avg female earnings according to country
-```{r}
-gendergap %>%
-  
-  filter(Sex !="Total") %>%
-  filter(Sex != "Male") %>%
-  summarise(Female_Avg_Earngs = mean(Total, na.rm = TRUE))
-  
-  
-  
-```
-
-
-```{r}
-Average_Earnings_According_to_Sex_And_Country <- aov(Total ~ Country + Sex, data = only_male_female)
-broom::tidy(Average_Earnings_According_to_Sex_And_Country)
-```
-
-
-```{r}
-gendergap %>%
-  filter(Country == "Afghanistan") %>%
-filter(Sex %in% c("Male", "Female")) %>%
-  t.test(Total ~ Sex, data =., alternative = "two.sided")
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(xtable) 
+library(summarytools)
 library(broom)
+st_options(lang = "en")
+
+gendergap <- readxl::read_xlsx("data/gendergap.xlsx" , skip = 3) %>% 
+  mutate(`15-64` = as.numeric(`15-64`)) %>% 
+  pivot_longer(cols = Total:`Not elsewhere classified`,
+               names_to = "job_title",
+               values_to = "wage") %>% 
+  pivot_longer(cols = `15+`:`25+`,
+               names_to = "age_group",
+               values_to = "underemployment")
+
+worlddata <- gendergap %>%
+  select(Country:wage) %>% 
+  unique() %>% 
+  group_by(Time, Sex, job_title) %>% 
+  summarise(wage = mean(wage, na.rm = TRUE))
+  
 ```
+
+## ttest test
+
 ```{r}
+# Bu da pek dogru degil ama kabul ettim.
 gendergap %>%
-
+  filter(Sex %in% c("Male", "Female")) %>%
+  filter(job_title == "Total", Country == "United States") %>% 
+  select(Country:wage) %>% 
+  unique() %>% 
+  t.test(wage ~ Sex, 
+         data = ., 
+         alternative = "two.sided") %>% 
+  tidy() %>% 
+  select(estimate, statistic, p.value) %>% 
+  knitr::kable()
 ```
 
 
 ```{r}
+# bu dogru ve yorumlanabilir bir test degil!!!
 gendergap %>%
-  filter(Sex != "Total") %>%
-group_by(Sex) %>%
-  nest() %>%
-mutate(t_test = map(data, ~t.test(.x$Total))) %>%
-  mutate(glance_t_test = t_test %>% purrr::map(glance)) %>%
-  unnest(glance_t_test) %>%
-  select(Sex,statistic, p.value)
+  filter(Sex %in% c("Male", "Female")) %>%
+  filter(job_title == "Total") %>% 
+  filter(Time == 2014) %>% 
+  select(Country:wage) %>% 
+  unique() %>% 
+  t.test(wage ~ Sex, 
+         data = ., 
+         alternative = "two.sided") %>% 
+  tidy() %>% 
+  select(estimate, statistic, p.value) %>% 
+  knitr::kable()
 ```
-```{r}
 
-only_male_female %>%
+```{r}
+# bu dogru ve yorumlanabilir bir test degil!!!
+gendergap %>% 
+  select(Country:wage) %>% 
+  unique() %>% 
+  filter(Sex %in% c("Male", "Female")) %>%
+  filter(job_title == "Total") %>% 
   group_by(Sex) %>%
   nest() %>%
-mutate(t_test = map(data, ~t.test(.x$Total))) %>%
+  mutate(t_test = map(data, ~t.test(.x$wage))) %>%
   mutate(glance_t_test = t_test %>% purrr::map(glance)) %>%
   unnest(glance_t_test) %>%
-  select(Country, statistic, p.value)
+  select(Sex, statistic, p.value)
 ```
 
-male avg earnings in countries based on year
+
+## anova
 ```{r}
+gendergap %>% 
+  filter(Sex %in% c("Male", "Female")) %>%
+  aov(wage ~ Country + Sex, data = .) %>% 
+  tidy()
+```
+
+
+
+```{r results='asis'}
 gendergap %>%
-  group_by(Time) %>%
-  filter(Sex !="Total") %>%
-  filter(Sex != "Female") %>%
-  arrange(Time) %>%
-  mutate(Male_Avg_Earngs = mean(Total, na.rm = TRUE)) %>%
-  select(Male_Avg_Earngs)
+  select("Sex", "wage") %>% 
+  descr(stats = c("mean", "sd", "min", "med", "max"), transpose = TRUE) %>% 
+  xtable(caption = "Summary Statistics",
+         label = "tab:summary",
+         align = c("l", "c", "c", "c", "c", "c")) %>% 
+  print(booktabs = TRUE, comment = FALSE, caption.placement = "top")
 ```
 
-Female avg earnings in countries based on year
-```{r}
-gendergap %>%
-  group_by(Time) %>%
-  filter(Sex !="Total") %>%
-  filter(Sex != "Male") %>%
-  arrange(Time) %>%
-  mutate(Female_Avg_Earngs = mean(Total, na.rm = TRUE)) %>%
-  select(Female_Avg_Earngs )
 
+# Methods and Data Analysis
+In this section describe the methods that you use to achieve the purpose of the study. You should use the appropriate analysis methods (such as hypothesis tests and correlation analysis) that we covered in the class. If you want, you can also use other methods that we haven't covered. If you think some method is more suitable for the purpose of the analysis and the data set, you can use that method [@newbold:2003; @verzani:2014; @wickham:2014; @wooldridge:2015a].
 
-```
+For example, if you are performing regression analysis, discuss your predicted equation in this section. Write your equations and mathematical expressions using $LaTeX$.
 
-female managers avg earnings according to country
-```{r}
-gendergap %>%
-  group_by(Country) %>% 
-   filter(Sex != "Total") %>%
-  filter(Sex != "Male") %>%
-  summarise(Female_Managers_Avg_Earngs = mean(Managers, na.rm = TRUE))
-```
-
-male managers avg earnings according to country
-```{r}
-gendergap %>%
-  group_by(Country) %>% 
-   filter(Sex != "Total") %>%
-  filter(Sex != "Female") %>%
-  summarise(Male_Managers_Avg_Earngs = mean(Managers, na.rm = TRUE))
-```
-
-male professionals avg earnings according to country
-
-```{r}
-gendergap %>%
-  group_by(Country) %>% 
-   filter(Sex != "Total") %>%
-  filter(Sex != "Female") %>%
-  summarise(Male_Professionals_Avg_Earngs = mean(Professionals, na.rm = TRUE))
-```
-
-female professionals avg earnings according to country
-```{r}
-gendergap %>%
-  group_by(Country) %>% 
-   filter(Sex != "Total") %>%
-  filter(Sex != "Male") %>%
-  summarise(Female_Professionals_Avg_Earngs = mean(Professionals, na.rm = TRUE))
-```
-
-Male technicians and associate professionals Avg Earngs according to country
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-  filter(sex != "Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_technicians_and_associate_professionals_Avg_Earngs = mean(technicians_and_associate_professionals, na.rm = TRUE))
-```
-
-female technicians and associate professionals Avg Earngs according to country
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-  filter(sex != "Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_technicians_and_associate_professionals_Avg_Earngs = mean(technicians_and_associate_professionals, na.rm = TRUE))
-```
-
- male Clerical support workers Avg Earngs according to country
-
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_Clerical_support_workers_Avg_Earngs = mean(clerical_support_workers, na.rm = TRUE))
-```
-
- Female Clerical support workers Avg Earngs according to country
-
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_Clerical_support_workers_Avg_Earngs = mean(clerical_support_workers, na.rm = TRUE))
-```
-
-male service and sales workers avg earnings
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_service_and_sales_workers_Avg_Earngs = mean(service_and_sales_workers, na.rm = TRUE))
-```
-
-female service and sales workers avg earnings
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_service_and_sales_workers_Avg_Earngs = mean(service_and_sales_workers, na.rm = TRUE))
-```
-
-Female skilled agricultural forestry and fishery workers Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_skilled_agricultural_forestry_and_fishery_workers_Avg_Earngs = mean(skilled_agricultural_forestry_and_fishery_workers, na.rm = TRUE))
-```
-
-Male skilled agricultural forestry and fishery workers Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_skilled_agricultural_forestry_and_fishery_workers_Avg_Earngs = mean(skilled_agricultural_forestry_and_fishery_workers, na.rm = TRUE))
-```
-
-Male craft and related trades workers Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_craft_and_related_trades_workers_Avg_Earngs = mean(craft_and_related_trades_workers, na.rm = TRUE))
-```
-
-Female craft and related trades workers Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_craft_and_related_trades_workers_Avg_Earngs = mean(craft_and_related_trades_workers, na.rm = TRUE))
-```
-
-Male plant and machine operators and assemblers Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_plant_and_machine_operators_and_assemblers_Avg_Earngs = mean(plant_and_machine_operators_and_assemblers, na.rm = TRUE))
-```
-
-Female plant and machine operators and assemblers Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_plant_and_machine_operators_and_assemblers_Avg_Earngs = mean(plant_and_machine_operators_and_assemblers, na.rm = TRUE))
-```
-
-Male elementary occupations Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_elementary_occupations_Avg_Earngs = mean(elementary_occupations, na.rm = TRUE))
-```
-
-Female elementary occupations Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_elementary_occupations_Avg_Earngs = mean(elementary_occupations, na.rm = TRUE))
-```
-
-Male armed forces occupations Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_armed_forces_occupations_Avg_Earngs = mean(armed_forces_occupations, na.rm = TRUE))
-```
-
-Female armed forces occupations Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_armed_forces_occupations_Avg_Earngs = mean(armed_forces_occupations, na.rm = TRUE))
-```
-
-Male not elsewhere classified Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_not_elsewhere_classified_Avg_Earngs = mean(not_elsewhere_classified, na.rm = TRUE))
-```
-
-Female not elsewhere classified Avg Earngs
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>% 
-   filter(sex != "Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_not_elsewhere_classified_Avg_Earngs = mean(not_elsewhere_classified, na.rm = TRUE))
-```
-
-Female-Male avg earnings according to occupation and year
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-tidyr::pivot_longer( cols = 5:15,
-             names_to = "job_type",
-             values_to = "average_hourly_earnings") %>%
-filter(sex!= "Total") %>%
-select(-c("total", "x15", "x15_64", "x15_24", "x25"))
-```
-
-male 15 years underemployment
-
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>%
-  filter(sex !="Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_15years_underemployment = mean(x15, na.rm = TRUE))%>%
-  select(country, Male_15years_underemployment)
-```
-
-female 15 years underemployment
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>%
-  filter(sex !="Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_15years_underemployment = mean(x15, na.rm = TRUE))%>%
-  select(country, Female_15years_underemployment)
-```
-
-male 15-64 years underemployment
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>%
-  filter(sex !="Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_15.64years_underemployment = mean(x15_64, na.rm = TRUE))%>%
-  select(country, Male_15.64years_underemployment)
-```
-
-female 15-64 years underemployment
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>%
-  filter(sex !="Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_15.64years_underemployment = mean(x15_64, na.rm = TRUE))%>%
-  select(country, Female_15.64years_underemployment)
-```
-
-male 15-24 years underemployment
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>%
-  filter(sex !="Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_15.24years_underemployment = mean(x15_24, na.rm = TRUE))%>%
-  select(country, Male_15.24years_underemployment)
-```
-
-female 15-24 years underemployment
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>%
-  filter(sex !="Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_15.24years_underemployment = mean(x15_24, na.rm = TRUE))%>%
-  select(country, Female_15.24years_underemployment)
-```
-
-female 25 years underemployment
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>%
-  filter(sex !="Total") %>%
-  filter(sex != "Male") %>%
-  summarise(Female_25years_underemployment = mean(x25, na.rm = TRUE))%>%
-  select(country, Female_25years_underemployment)
-```
-
-male 25 years underemployment
-```{r}
-gendergap %>%
-  janitor::clean_names() %>%
-  group_by(country) %>%
-  filter(sex !="Total") %>%
-  filter(sex != "Female") %>%
-  summarise(Male_25years_underemployment = mean(x25, na.rm = TRUE))%>%
-  select(country, Male_25years_underemployment)
-```
-
-```{r}
-only_male_female <- gendergap %>%
-  filter(Sex!= "Total")
-  shapiro.test(only_male_female$Total)
-
-  only_male_female %>%
-    group_by(Sex) %>%
-    tidyr::nest() %>%
-    mutate(Shapiro = purrr::map(data, ~shapiro.test(.x$Total))) %>%
-    mutate(glance_shapiro = Shapiro %>% purrr::map(broom::glance)) %>%
-    tidyr::unnest(glance_shapiro) %>%
-    select(Sex, statistic, p.value)
-```
-
+$$
+Y_t = \beta_0 + \beta_N N_t + \beta_P P_t + \beta_I I_t + \varepsilon_t
+$$
