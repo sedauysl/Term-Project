@@ -79,14 +79,38 @@ worlddata <- gendergap %>%
 
 ## ttest test
 
+
+
+
 ```{r}
-# Bu da pek dogru degil ama kabul ettim.
-gendergap %>%
+library(readxl)
+library(readxl)
+gendergap2 <- read_excel("data/gendergap2.xlsx")
+View(gendergap2)
+
+
+gendergap2 %>%
   filter(Sex %in% c("Male", "Female")) %>%
-  filter(job_title == "Total", Country == "United States") %>% 
-  select(Country:wage) %>% 
+  select(Area:Wage) %>% 
   unique() %>% 
-  t.test(wage ~ Sex, 
+  t.test(Wage ~ Sex, 
+         data = ., 
+         alternative = "two.sided") %>% 
+  tidy() %>% 
+  select(estimate, statistic, p.value) %>% 
+  knitr::kable()
+
+```
+
+
+```{r}
+gendergap2 %>%
+janitor::clean_names() %>%
+  filter(sex %in% c("Male", "Female")) %>%
+  filter(economic_activity == "Agriculture") %>% 
+  select(area:wage) %>% 
+  unique() %>% 
+  t.test(wage ~ sex, 
          data = ., 
          alternative = "two.sided") %>% 
   tidy() %>% 
@@ -94,36 +118,21 @@ gendergap %>%
   knitr::kable()
 ```
 
-
 ```{r}
-# bu dogru ve yorumlanabilir bir test degil!!!
-gendergap %>%
-  filter(Sex %in% c("Male", "Female")) %>%
-  filter(job_title == "Total") %>% 
-  filter(Time == 2014) %>% 
-  select(Country:wage) %>% 
+gendergap2 %>%
+janitor::clean_names() %>%
+  filter(sex %in% c("Male", "Female")) %>%
+  filter(education == "Primary education") %>% 
+  select("area", "sex", "education", "unemployment_by_education_level") %>% 
   unique() %>% 
-  t.test(wage ~ Sex, 
+  t.test(wage ~ sex, 
          data = ., 
          alternative = "two.sided") %>% 
   tidy() %>% 
   select(estimate, statistic, p.value) %>% 
   knitr::kable()
-```
 
-```{r}
-# bu dogru ve yorumlanabilir bir test degil!!!
-gendergap %>% 
-  select(Country:wage) %>% 
-  unique() %>% 
-  filter(Sex %in% c("Male", "Female")) %>%
-  filter(job_title == "Total") %>% 
-  group_by(Sex) %>%
-  nest() %>%
-  mutate(t_test = map(data, ~t.test(.x$wage))) %>%
-  mutate(glance_t_test = t_test %>% purrr::map(glance)) %>%
-  unnest(glance_t_test) %>%
-  select(Sex, statistic, p.value)
+
 ```
 
 
