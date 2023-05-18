@@ -48,7 +48,7 @@ Moreover,females compose to the wide majority of clerical, administrative, commu
 It is important to explain why women are relegated to a lower economic position. When these patterns arise from unequal opportunities, due to unjust hiring exercises, it means that the economy is failing to fully and appropriately  employ highly productive workers. Conversely, if  unfair economic outcomes result from varying individual choices despite fair opportunities,followed by government intervention can cause a damaged allotment of resources and unproductivies in the economy. If productive efficiency is hindered instead of helping disadvantaged groups, then in the long run everyone suffers.[@polachek1987mesleki]
 
 # Data
-In this section, discuss the source of the data set you use in your study, if you have done any operation on the raw data, these operations and the summary statistics about the data set. In this section, it is mandatory to have a table (Table \ref{tab:summary}) containing summary statistics (mean, standard deviation, minimum, maximum, etc. values) of all variables. Make the necessary references to your tables as shown in the previous sentence [@perkins:1991].
+In this section, discuss the source of the data set you use in your study, if you have done any operation on the raw data, these operations and the summary statistics about the data set. In this section, it is mandatory to have a table (Table \ref{tab:summary}) containing summary statistics (mean, standard deviation, minimum, maximum, etc. values) of all variables. Make the necessary references to your tables as shown in the previous sentence [perkins:1991].
 
 R codes for the analysis should start in this section. In this section, you should include the codes that imports the data set into R and the codes that generate summary statistics.
 
@@ -149,7 +149,7 @@ gendergap %>%
 
 
 # Methods and Data Analysis
-In this section describe the methods that you use to achieve the purpose of the study. You should use the appropriate analysis methods (such as hypothesis tests and correlation analysis) that we covered in the class. If you want, you can also use other methods that we haven't covered. If you think some method is more suitable for the purpose of the analysis and the data set, you can use that method [@newbold:2003; @verzani:2014; @wickham:2014; @wooldridge:2015a].
+In this section describe the methods that you use to achieve the purpose of the study. You should use the appropriate analysis methods (such as hypothesis tests and correlation analysis) that we covered in the class. If you want, you can also use other methods that we haven't covered. If you think some method is more suitable for the purpose of the analysis and the data set, you can use that method [newbold:2003; verzani:2014; wickham:2014; wooldridge:2015a].
 
 For example, if you are performing regression analysis, discuss your predicted equation in this section. Write your equations and mathematical expressions using $LaTeX$.
 
