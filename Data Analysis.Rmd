@@ -58,22 +58,17 @@ library(tidyverse)
 library(xtable) 
 library(summarytools)
 library(broom)
+library(purrr)
 st_options(lang = "en")
 
-gendergap <- readxl::read_xlsx("data/gendergap.xlsx" , skip = 3) %>% 
-  mutate(`15-64` = as.numeric(`15-64`)) %>% 
-  pivot_longer(cols = Total:`Not elsewhere classified`,
-               names_to = "job_title",
-               values_to = "wage") %>% 
-  pivot_longer(cols = `15+`:`25+`,
-               names_to = "age_group",
-               values_to = "underemployment")
+gendergap2$Unemployment_by_education_level <- as.numeric(gendergap2$Unemployment_by_education_level)
+gendergap2$Wage <- as.numeric(gendergap2$Wage)
+gendergap2$Sex <- as.factor(gendergap2$Sex)
+gendergap2$Education <- as.factor(gendergap2$Education)
 
-worlddata <- gendergap %>%
-  select(Country:wage) %>% 
-  unique() %>% 
-  group_by(Time, Sex, job_title) %>% 
-  summarise(wage = mean(wage, na.rm = TRUE))
+
+
+
   
 ```
 
@@ -165,3 +160,4 @@ For example, if you are performing regression analysis, discuss your predicted e
 $$
 Y_t = \beta_0 + \beta_N N_t + \beta_P P_t + \beta_I I_t + \varepsilon_t
 $$
+
