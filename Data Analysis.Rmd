@@ -59,32 +59,38 @@ library(xtable)
 library(summarytools)
 library(broom)
 library(purrr)
-st_options(lang = "en")
-
-gendergap2$Unemployment_by_education_level <- as.numeric(gendergap2$Unemployment_by_education_level)
-gendergap2$Wage <- as.numeric(gendergap2$Wage)
-gendergap2$Sex <- as.factor(gendergap2$Sex)
-gendergap2$Education <- as.factor(gendergap2$Education)
-
-
-
-
-  
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+library(summarytools)
+library(gdata)
+library(ggplot2)
+library(patchwork)
 ```
-
-## ttest test
-
-
-
 
 ```{r}
 library(readxl)
 library(readxl)
 gendergap2 <- read_excel("data/gendergap2.xlsx")
 View(gendergap2)
+gendergap3 <- gendergap2 %>%
+filter(Sex != "Total")  
+
+gendergap2$Unemployment.by.Education.Level <- as.numeric(gendergap2$Unemployment.by.Education.Level)
+gendergap2$Wage <- as.numeric(gendergap2$Wage)
+gendergap2$Sex <- as.factor(gendergap2$Sex)
+gendergap2$Education <- as.factor(gendergap2$Education)
+gendergap2$`Unemployment.by.Age` <- as.numeric(gendergap2$`Unemployment.by.Age`)
+gendergap2$`Employment.Rate` <- as.numeric(gendergap2$`Employment.Rate`)
+gendergap2$Economic.Activity <- as.factor(gendergap2$Economic.Activity)
+gendergap2$Education <- as.factor(gendergap2$Education)
+gendergap2$Area <- as.factor(gendergap2$Area)
+```
 
 
+```{r}
 gendergap2 %>%
+  
   filter(Sex %in% c("Male", "Female")) %>%
   select(Area:Wage) %>% 
   unique() %>% 
@@ -94,7 +100,47 @@ gendergap2 %>%
   tidy() %>% 
   select(estimate, statistic, p.value) %>% 
   knitr::kable()
+```
 
+
+```{r}
+gendergap2 %>%
+  filter(Sex %in% c("Female", "Male")) %>%
+   filter(Economic.Activity %in% c("Business and Administrative Services", "Agriculture", "Manufacturing", "Construction", "Business and Administrative Services", "Public Administration and other Services")) %>%
+      group_by(Economic.Activity) %>%
+      drop_na(Sex) %>%
+      mutate(Economic.Activity = fct_reorder(Economic.Activity, Wage)) %>%
+      ggplot(aes(Wage, Economic.Activity, fill = Sex)) +
+      geom_col( position = "dodge") +
+      labs(subtitle = "Wage Rate According to Economic Activity",
+           x = "Wage",
+           y = "Economic Activity") +
+      hrbrthemes::theme_ipsum_rc()
+```
+
+
+```{r}
+gendergap2 %>%
+  filter(Sex %in% c("Female", "Male")) %>%
+      group_by(Education) %>%
+      drop_na(Sex) %>%
+      mutate(Education = fct_reorder(Education, Unemployment.by.Education.Level)) %>%
+      ggplot(aes(Unemployment.by.Education.Level, Education, fill = Sex)) +
+      geom_col( position = "dodge") +
+      labs(subtitle = "Unemployment by Education Level",
+           x = "Unemployment",
+           y = "Education Level") +
+      hrbrthemes::theme_ipsum_rc()
+```
+
+```{r}
+gendergap2 %>%
+  filter(Sex %in% c("Female", "Male")) %>%
+  na.omit() %>%
+  ggplot(aes(x = Sex, y = Employment.Rate)) +
+  geom_boxplot() +
+  labs(x = "Sex",
+       y = "Employment Rate")
 ```
 
 
@@ -102,54 +148,59 @@ gendergap2 %>%
 gendergap2 %>%
 janitor::clean_names() %>%
   filter(sex %in% c("Male", "Female")) %>%
-  filter(economic_activity == "Agriculture") %>% 
-  select(area:wage) %>% 
   unique() %>% 
-  t.test(wage ~ sex, 
+  t.test(employment_rate ~ sex, 
          data = ., 
-         alternative = "two.sided") %>% 
+         alternative = "two.sided", confidence.level = 95) %>% 
   tidy() %>% 
   select(estimate, statistic, p.value) %>% 
   knitr::kable()
+  
 ```
 
 ```{r}
 gendergap2 %>%
 janitor::clean_names() %>%
   filter(sex %in% c("Male", "Female")) %>%
-  filter(education == "Primary education") %>% 
-  select("area", "sex", "education", "unemployment_by_education_level") %>% 
+  select("area", "wage", "sex", "education", "unemployment_by_education_level") %>% 
   unique() %>% 
-  t.test(wage ~ sex, 
+  t.test(unemployment_by_education_level ~ sex, 
          data = ., 
          alternative = "two.sided") %>% 
   tidy() %>% 
-  select(estimate, statistic, p.value) %>% 
+  select(estimate, statistic, p.value) %>%
   knitr::kable()
 
 
-```
-
-
-## anova
-```{r}
-gendergap %>% 
-  filter(Sex %in% c("Male", "Female")) %>%
-  aov(wage ~ Country + Sex, data = .) %>% 
-  tidy()
 ```
 
 
 
 ```{r results='asis'}
-gendergap %>%
-  select("Sex", "wage") %>% 
+gendergap2 %>%
+  filter(Sex != "Total") %>%
+  filter(Sex != "Female") %>%
+  select("Sex", "Wage", "Unemployment.by.Education.Level", "Unemployment.by.Age", "Employment.Rate") %>% 
   descr(stats = c("mean", "sd", "min", "med", "max"), transpose = TRUE) %>% 
-  xtable(caption = "Summary Statistics",
+  xtable(caption = "Summary Statistics for Male",
+         label = "tab:summary",
+         align = c("l", "c", "c", "c", "c", "c")) %>% 
+  print(booktabs = TRUE, comment = FALSE, caption.placement = "top") 
+  
+```
+
+```{r results='asis'}
+gendergap2 %>%
+  filter(Sex != "Total") %>%
+  filter(Sex != "Male") %>%
+  select("Sex", "Wage", "Unemployment.by.Education.Level", "Unemployment.by.Age", "Employment.Rate") %>% 
+  descr(stats = c("mean", "sd", "min", "med", "max"), transpose = TRUE) %>% 
+  xtable(caption = "Summary Statistics for Female",
          label = "tab:summary",
          align = c("l", "c", "c", "c", "c", "c")) %>% 
   print(booktabs = TRUE, comment = FALSE, caption.placement = "top")
 ```
+
 
 
 # Methods and Data Analysis
