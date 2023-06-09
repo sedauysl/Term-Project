@@ -1,7 +1,7 @@
 ---
-title: "Title"
+title: "Gendergap in United States"
 author: 
-  - Last Name, First Name[^1]
+  - Uysal, Seda[^1]
 bibliography: ./bibliography/biblio.bib
 csl: ./csl/apa.csl
 header-includes:
@@ -25,19 +25,24 @@ urlcolor: blue
 fontsize: 12pt
 biblio-style: apalike
 abstract: |
-  Write your abstract here.
+ The aim of this study is to examine whether there is gender inequality for wage,unemployment by age, unemployment by education and employment in the United States. Gender, time and economic activities were examined as the main variables affecting employee wages. Unemployment by age and education, employment status were also examined on gender inequality. Gender differences occur in working life as well as in social life. In every sector, in every profession, in every position, the most important gender difference is in wages for labor. In addition, unemployment status varies according to the education level and age of the people. However, being unemployed at the same education level or even at the same age can be unfair. In all these unequal situations, it is government policies and employers that will give priority to the solution. As stated in the analysis result, women are paid less than men, even if they engage in the same economic activity.In unemployment by education level where the gender difference is significant, the inequality between the genders continues. Although there is no significant difference, women lag behind men in unemployment by age and employment.In order for a country to develop socially and economically, it must eliminate the inequality in the wages,unemployment and employment and be fair at the beginning.
+
+
+
+
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = FALSE, echo = FALSE, message = FALSE, warning = FALSE)
+
 ```
 
 <!-- ======================================================================= -->
 <!-- ============================== FOOTNOTES ============================== -->
 <!-- ======================================================================= -->
-[^1]: Student ID
+[^1]: Student ID: 20080404
 
 # Introduction
-Whether or not women have equal rights in the workforce has been a matter of debate since the past. Even if they have equal skills, women's working at lower wages than men is one of the biggest socio-economic problems of countries. Unequal policies of countries or sectors negatively affect women's labor supply, female unemployment rates and women's economic power. At this point, unequal opportunities break the trust and desire of women employees and drop them from the workforce. These unequal labor policies and the unfair behavior of the sectors in almost every country in the world negatively affect productivity regardless of whether they are female-dominated or male-dominated sectors. In this study, it will be determined whether an egalitarian path is followed by looking at workers' wages according to gender and occupations and unemployment rates according to gender,ages in countries with different socioeconomic and sociocultural characteristics. In this study, hourly wages according to gender and different occupations and unemployment rates according to gender and ages in different countries in different years were used from the International Labor Organization resource and supported the data with literature review. This study based on the hypothesis “Women earn less than men in all occupations.", and the data were analyzed with T-test and Chi-Square. According to the analysis, the wages and employment status of individuals and ages in different countries and different genders and in different occupations were examined according to the results obtained.
+Whether or not women have equal rights in the workforce has been a matter of debate since the past. Even if they have equal skills, women's working at lower wages than men is one of the biggest socio-economic problems of countries. Unequal policies of countries or sectors negatively affect women's labor supply, female unemployment rates and women's economic power. At this point, unequal opportunities break the trust and desire of women employees and drop them from the workforce. These unequal labor policies and the unfair behavior of the sectors in almost every country in the world negatively affect productivity regardless of whether they are female-dominated or male-dominated sectors. According to the analysis,in the United States, gender wages by economic activity and time, unemployment by education level, unemployment by age and employment data were examined used from the International Labor Organization (ILOSTAT) resource and supported the data with literature review. This study based on the hypothesis “Gender equality does not apply to wage, unemployment by education level, unemployment by age and employment in the United States.", and the data were analyzed with T-test. 
 
 ## Literature Review
 
@@ -48,9 +53,6 @@ Moreover,females compose to the wide majority of clerical, administrative, commu
 It is important to explain why women are relegated to a lower economic position. When these patterns arise from unequal opportunities, due to unjust hiring exercises, it means that the economy is failing to fully and appropriately  employ highly productive workers. Conversely, if  unfair economic outcomes result from varying individual choices despite fair opportunities,followed by government intervention can cause a damaged allotment of resources and unproductivies in the economy. If productive efficiency is hindered instead of helping disadvantaged groups, then in the long run everyone suffers.[@polachek1987mesleki]
 
 # Data
-In this section, discuss the source of the data set you use in your study, if you have done any operation on the raw data, these operations and the summary statistics about the data set. In this section, it is mandatory to have a table (Table \ref{tab:summary}) containing summary statistics (mean, standard deviation, minimum, maximum, etc. values) of all variables. Make the necessary references to your tables as shown in the previous sentence [perkins:1991].
-
-R codes for the analysis should start in this section. In this section, you should include the codes that imports the data set into R and the codes that generate summary statistics.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -66,6 +68,10 @@ library(summarytools)
 library(gdata)
 library(ggplot2)
 library(patchwork)
+library(extrafont)
+library(plotly)
+library(IRdisplay)
+library(ggpol)
 ```
 
 ```{r}
@@ -73,127 +79,51 @@ library(readxl)
 library(readxl)
 gendergap2 <- read_excel("data/gendergap2.xlsx")
 View(gendergap2)
-gendergap3 <- gendergap2 %>%
-filter(Sex != "Total")  
 
 gendergap2$Unemployment.by.Education.Level <- as.numeric(gendergap2$Unemployment.by.Education.Level)
 gendergap2$Wage <- as.numeric(gendergap2$Wage)
 gendergap2$Sex <- as.factor(gendergap2$Sex)
 gendergap2$Education <- as.factor(gendergap2$Education)
 gendergap2$`Unemployment.by.Age` <- as.numeric(gendergap2$`Unemployment.by.Age`)
-gendergap2$`Employment.Rate` <- as.numeric(gendergap2$`Employment.Rate`)
+gendergap2$`Employment` <- as.numeric(gendergap2$`Employment`)
 gendergap2$Economic.Activity <- as.factor(gendergap2$Economic.Activity)
 gendergap2$Education <- as.factor(gendergap2$Education)
 gendergap2$Area <- as.factor(gendergap2$Area)
 ```
 
-
-```{r}
-gendergap2 %>%
-  
-  filter(Sex %in% c("Male", "Female")) %>%
-  select(Area:Wage) %>% 
-  unique() %>% 
-  t.test(Wage ~ Sex, 
-         data = ., 
-         alternative = "two.sided") %>% 
-  tidy() %>% 
-  select(estimate, statistic, p.value) %>% 
-  knitr::kable()
-```
+The data used in the study were obtained from the International Labor Organization (ILOSTAT) database for the years 2003-2022 covering the United States. Wage is the dependent variable of the country that is the data source was analyzed according to the independent variables such as sex, economic activity, time, education level, unemployment by education level, age, unemployment by age and employment.
 
 
-```{r}
-gendergap2 %>%
-  filter(Sex %in% c("Female", "Male")) %>%
-   filter(Economic.Activity %in% c("Business and Administrative Services", "Agriculture", "Manufacturing", "Construction", "Business and Administrative Services", "Public Administration and other Services")) %>%
-      group_by(Economic.Activity) %>%
-      drop_na(Sex) %>%
-      mutate(Economic.Activity = fct_reorder(Economic.Activity, Wage)) %>%
-      ggplot(aes(Wage, Economic.Activity, fill = Sex)) +
-      geom_col( position = "dodge") +
-      labs(subtitle = "Wage Rate According to Economic Activity",
-           x = "Wage",
-           y = "Economic Activity") +
-      hrbrthemes::theme_ipsum_rc()
-```
-
-
-```{r}
-gendergap2 %>%
-  filter(Sex %in% c("Female", "Male")) %>%
-      group_by(Education) %>%
-      drop_na(Sex) %>%
-      mutate(Education = fct_reorder(Education, Unemployment.by.Education.Level)) %>%
-      ggplot(aes(Unemployment.by.Education.Level, Education, fill = Sex)) +
-      geom_col( position = "dodge") +
-      labs(subtitle = "Unemployment by Education Level",
-           x = "Unemployment",
-           y = "Education Level") +
-      hrbrthemes::theme_ipsum_rc()
-```
-
-```{r}
-gendergap2 %>%
-  filter(Sex %in% c("Female", "Male")) %>%
-  na.omit() %>%
-  ggplot(aes(x = Sex, y = Employment.Rate)) +
-  geom_boxplot() +
-  labs(x = "Sex",
-       y = "Employment Rate")
-```
-
-
-```{r}
-gendergap2 %>%
-janitor::clean_names() %>%
-  filter(sex %in% c("Male", "Female")) %>%
-  unique() %>% 
-  t.test(employment_rate ~ sex, 
-         data = ., 
-         alternative = "two.sided", confidence.level = 95) %>% 
-  tidy() %>% 
-  select(estimate, statistic, p.value) %>% 
-  knitr::kable()
-  
-```
-
-```{r}
-gendergap2 %>%
-janitor::clean_names() %>%
-  filter(sex %in% c("Male", "Female")) %>%
-  select("area", "wage", "sex", "education", "unemployment_by_education_level") %>% 
-  unique() %>% 
-  t.test(unemployment_by_education_level ~ sex, 
-         data = ., 
-         alternative = "two.sided") %>% 
-  tidy() %>% 
-  select(estimate, statistic, p.value) %>%
-  knitr::kable()
-
-
-```
-
-
+In this study, the data were analyzed on the basis of sex. Summary statistics tables for both sex are presented below. In this study,(Table\ref{tab:summary2}) contains summary statistics for male and (Table\ref{tab:summary}) contains  summary statistics for female. 
 
 ```{r results='asis'}
+
+st_options(lang = "en")
 gendergap2 %>%
-  filter(Sex != "Total") %>%
+   filter(Sex != "Total") %>%
   filter(Sex != "Female") %>%
-  select("Sex", "Wage", "Unemployment.by.Education.Level", "Unemployment.by.Age", "Employment.Rate") %>% 
+  filter(Age != "Total") %>%
+  filter(Education != "Total") %>%
+  select("Sex", "Wage", "Unemployment.by.Education.Level", "Unemployment.by.Age", "Employment") %>%
   descr(stats = c("mean", "sd", "min", "med", "max"), transpose = TRUE) %>% 
   xtable(caption = "Summary Statistics for Male",
-         label = "tab:summary",
+         label = "tab:summary2",
          align = c("l", "c", "c", "c", "c", "c")) %>% 
   print(booktabs = TRUE, comment = FALSE, caption.placement = "top") 
   
+
 ```
+According to (Table\ref{tab:summary2}), the mean of  employment is 11020337.64 and the minimum value ranges from 4745.63 to the maximum value 18335082.00. The mean of unemployment by age is 28208.67 and the minimum value ranges from  5.00 to the maximum value 46813.00. The mean of unemployment by education level is  31594.63 and the minimum value ranges from  13.39 to the maximum value 47150.00. The mean of wage is  3925.24  and the minimum value ranges from  2257.55 to the maximum value  5733.79.   
+
 
 ```{r results='asis'}
+st_options(lang = "en")
 gendergap2 %>%
   filter(Sex != "Total") %>%
   filter(Sex != "Male") %>%
-  select("Sex", "Wage", "Unemployment.by.Education.Level", "Unemployment.by.Age", "Employment.Rate") %>% 
+  filter(Age != "Total") %>%
+  filter(Education != "Total") %>%
+  select("Sex", "Wage", "Unemployment.by.Education.Level", "Unemployment.by.Age", "Employment") %>% 
   descr(stats = c("mean", "sd", "min", "med", "max"), transpose = TRUE) %>% 
   xtable(caption = "Summary Statistics for Female",
          label = "tab:summary",
@@ -201,14 +131,160 @@ gendergap2 %>%
   print(booktabs = TRUE, comment = FALSE, caption.placement = "top")
 ```
 
+According to (Table\ref{tab:summary}), the mean of  employment is 9854605.23 and the minimum value ranges from 8313.60 to the maximum value  16030439.00. The mean of unemployment by age is 29674.82 and the minimum value ranges from  6.00 to the maximum value 47331.00. The mean of unemployment by education level is  27112.74 and the minimum value ranges from  7.00 to the maximum value 47150.00. The mean of wage is  3073.79  and the minimum value ranges from   1763.4 to the maximum value  4776.85.  
 
 
 # Methods and Data Analysis
-In this section describe the methods that you use to achieve the purpose of the study. You should use the appropriate analysis methods (such as hypothesis tests and correlation analysis) that we covered in the class. If you want, you can also use other methods that we haven't covered. If you think some method is more suitable for the purpose of the analysis and the data set, you can use that method [newbold:2003; verzani:2014; wickham:2014; wooldridge:2015a].
+The method used in the study is the t test for independent samples.
 
-For example, if you are performing regression analysis, discuss your predicted equation in this section. Write your equations and mathematical expressions using $LaTeX$.
+The main hypothesis of the study:
 
-$$
-Y_t = \beta_0 + \beta_N N_t + \beta_P P_t + \beta_I I_t + \varepsilon_t
-$$
+H0: Gender equality applies to wage,unemployment by education level, unemployment by age and employment in the United States.
+
+H1: Gender equality does not apply to wage, unemployment by education level, unemployment by age and employment in the United States.
+
+Below are graphs that include wage workers' gender, economic activity, unemployment rates by education level, unemployment rates by age, wages by time and employment levels. Graph 1 below shows the average wages earned by sexes in different economic activities.
+
+```{r, fig4, fig.height=4, fig.width=6}
+gendergap2 %>%
+  filter(Sex %in% c("Female", "Male")) %>%
+   filter(Economic.Activity %in% c("Business and Administrative Services", "Agriculture", "Manufacturing", "Construction", "Business and Administrative Services", "Public Administration and other Services")) %>%
+      group_by(Economic.Activity) %>%
+      drop_na(Sex) %>%
+      mutate(Economic.Activity = fct_reorder(Economic.Activity, Wage)) %>%
+      ggplot(aes(Wage, Economic.Activity, fill = Sex)) +
+       geom_col(width = 0.8, position = position_dodge(0.8)) +
+      labs(subtitle = "Graph 1: Wages According to Economic Activity",
+           x = "Wage",
+           y = "Economic Activity") 
+  
+```
+
+ According to the graph 1, While the highest wage for male in Public Administration and other Services is 5489.39, the highest wage for female in the same economic activity is 4366.38. While the highest wage for male in Manufacturing is 5733.79, the highest wage for female in the same economic activity is 4776.85. While the highest wage for male in Construction is 5072.94, the highest wage for female in the same economic activity is 4561.45. While the highest wage for male in Business and Administrative Services is 5288.26, the highest wage for female in the same economic activity is 4079.62. While the highest wage for male in Agriculture is 3932.19, the highest wage for female in the same economic activity is 3466.58. When the general summary of the graph is examined, it is seen that the wages of females are less than the wages of males in all economic activities.
+
+
+
+```{r, fig.height=3.10, fig.width=6}
+gendergap2 %>%
+  filter(Sex %in% c("Female", "Male")) %>%
+  filter(Education != "Total") %>%
+  group_by(Education) %>%
+      drop_na(Sex) %>%
+      mutate(Education = fct_reorder(Education, Unemployment.by.Education.Level)) %>%
+      ggplot(aes(Unemployment.by.Education.Level, Education, fill = Sex)) +
+      geom_col( position = "dodge") +
+      labs(subtitle = "Graph 2: Unemployment by Education Level",
+           x = "Unemployment",
+           y = "Education Level") 
+
+```
+
+   According to the graph 2, male and female unemployment was examined according to education level. While maximum value of unemployed men are 45962 at primary education level, maximum value of unemployed women are less than men with 45237. While maximum value of unemployed men are 46935 at Lower secondary education level, maximum value of unemployed women are less than men with 45243. While maximum value of  unemployed men are 45242.00 at upper secondary education level, maximum value of unemployed women are higher than men with 45265. While maximum value of unemployed men are 46813 at Short-cycle tertiary education level, maximum value of unemployed women are less than men with 45234. While maximum value of unemployed men are 45079 at Bachelor's or equivalent education level, maximum value of unemployed women are higher than men with 45172. At Master's or equivalent education level, maximum value of unemployed male 47150 and maximum value of unemployed female are the same with 47150 as males. When we look at the general table, unemployed male is more than unemployed female.
+
+```{r, fig.height=3, fig.width=5}
+gendergap2 %>%
+  filter(Sex %in% c("Female", "Male")) %>%
+  filter(Age != "Total") %>%
+  group_by(Age) %>%
+      drop_na(Sex) %>%
+      mutate(Age = fct_reorder(Age, Unemployment.by.Age)) %>%
+      ggplot(aes(Unemployment.by.Age, Age, fill = Sex)) +
+       geom_col(width = 0.8, position = position_dodge(0.8)) +
+     labs(subtitle = "Graph 3: Unemployment by Age",
+ x = "Unemployment",
+ y = "Age") 
+
+
+
+```
+
+  According to graph 3, male and female unemployment was examined according to
+age. While the maximum number of unemployed men in the 15-24 age group is 45597.00, the maximum number of unemployed women is less than men, with a maximum number of 45177.00. While the maximum number of unemployed men in the 25-34 age group is 45236, the maximum number of unemployed women is 46569, which is higher than that of men. While the maximum number of unemployed men in the 25-34 age group is 46813, the maximum number of unemployed women is 45081, which is less than men. While the maximum number of unemployed men in the 45-54 age group is 45748, the maximum number of unemployed women is 47178, which is higher than that of men. While the maximum number of unemployed men in the 55-64 age group is 45748	, the maximum number of unemployed women is 45444	, which is less than that of men. While the maximum number of unemployed men in the 65+ age group is 45171, the maximum number of unemployed women is 47331, which is higher than that of men. With the overall results, women have a higher number of unemployed than men.
+
+
+Below are the box plots that analyze wage by time and employment by sex. 
+
+
+
+```{r, fig.height=3, fig.width=5}
+gendergap2 %>%
+  filter(Sex %in% c("Female", "Male")) %>%
+ggplot(aes(x=Time, y=Wage, fill=Sex)) + 
+    geom_boxplot() +
+  labs(subtitle = "Box Plot 1: Wages by Time")+
+    facet_wrap(~Sex)
+
+
+```
+ 
+ In Box plot 1, between 2003 and 2022, the minimum wage for male is 2257.55 and the minimum wage for female is 1763.40. Thus, the lowest wage is observed for female as 1763.40. In Box plot 1, between 2003 and 2022, the maximum wage for male is 5733.79 and the maximum wage for female is  4776.85. Thus, the highest wage is observed for male as 5733.79. The median male wage was found to be 3931.56 and the female wage median to be 3047.01. A significant difference observed in the wage distribution of male and female.
+
+```{r, fig.height=3, fig.width=4}
+options(scipen=999)
+gendergap2 %>%
+  filter(Sex %in% c("Female", "Male")) %>%
+  na.omit() %>%
+  ggplot(aes(x = Sex, y = Employment)) +
+  geom_boxplot() +
+  labs(x = "Sex",
+       y = "Employment", caption = "Box Plot 2: Employment by Sex")
+```
+
+Box plot 2 shows the employment numbers of male and female. Outliers in data of both sexes were examined by ignoring them. The median of the box showing the employment number of women is 11086830.00, and the median of the box showing the employment number of men is 12282342.00. The male employment median is not outside the box showing the female employment distribution. In this case, no significant difference can be observed in the employment distribution of male and female.
+
+```{r echo=FALSE, results='asis'}
+options(scipen=999)
+gendergap2 %>%
+ filter(Sex %in% c("Male", "Female")) %>% 
+  filter(Education != "Total") %>%
+  filter(Age != "Total") %>%
+  select(Wage, Unemployment.by.Education.Level, Unemployment.by.Age, Employment, Sex) %>%
+  gather(key = variable, value = value, -Sex) %>%
+  group_by(Sex, variable) %>%
+  summarise(value = list(value)) %>%
+  spread(Sex, value) %>%
+  group_by(variable) %>%
+  mutate(p_value = t.test(unlist(Female), unlist(Male))$p.value,
+         t_value = t.test(unlist(Female), unlist(Male))$statistic) %>%
+  select(p_value, t_value) %>%
+ xtable(label = "ttest:2",
+ caption = "t-test") %>%
+print(comment = FALSE)
+  
+    
+ 
+```
+
+Independent sample t-test results for gender equality of male and female employees are given in (Table\ref{ttest:2}). The p value results for Employment and Unemployment by age are not statistically significant. Also, the p value for unemployment by education level and wage were observed to be statistically significant. In particular, it was found as a result of the test analysis that the gender pay gap was quite high. Gender inequality applies in United States to wage and unemployment by education level. It has been seen that females are paid less than males at 0.00 p value and have more unemployed than males at the same education levels at 0.01 p value. However, gender inequality does not exactly apply in United States to employment and unemployment by age.
+
+ 
+ $$
+ t_w = \frac{M_{1} - M_{2}}{S_{p}}
+ $$
+Two paired t-test equation was applied in the analysis, M values ​​represent gender medians and S values ​​represent standard deviations.
+
+
+
+# Conclusion
+
+Gender inequality in wage, unemployment and employment was examined in this study as presented in tables and box plots.T-test was used to examine gender inequality in wage, unemployment and employment data. Wage, which is the dependent variable in the data set and independent variables such as sex, time, economic activity, education level, unemployment by education level, age, unemployment by age and employment were examined. As a result of the analysis,women are paid less than men for every economic activity. According to the analysis, women have more unemployed than men at only Bachelor's or equivalent education level, and the gender gap is quite significant. In the analysis, women were mostly unemployed in the 25-34, 45-54 and 65+ age groups than men, and no significant difference can be observed. In the results obtained, women had less wages than men in the 2003-2022 time periods, and it was observed that the difference was quite significant. Analysis results did not show a significant difference between the two genders for employment. Although there was no significant difference in unemployment by age and employment in the analysis, it was observed that women lagged behind men in employment and had more unemployed than men in unemployment by age.
+
+As a result of the analysis made according to gender inequality, the analysis result was indifferent between the H0 and H1 hypotheses and could support that gender equality does not apply to wage and unemployment by age in United States.
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+# References {#references}
+<div id="refs"></div>
+
 
